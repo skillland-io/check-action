@@ -8,6 +8,8 @@
 
 Website: **[skillland.io](https://skillland.io)**. Check a skill in the browser, read every rule with its source, and browse scored public skills.
 
+![The action adds an annotation on each finding's line of SKILL.md in the pull request and writes a job summary with each skill's score and area grades](https://raw.githubusercontent.com/skillland-io/check-action/main/.github/preview.png)
+
 A GitHub Action that lints agent skills (`SKILL.md` folders) for Claude Code, Codex and Cursor on every push and pull request. It runs the open [`@skillland/validator`](https://github.com/skillland-io/skill-validator), the same rules that score the public skills on [skillland.io](https://skillland.io).
 
 Every rule quotes the official guidance it relies on: the [Agent Skills specification](https://agentskills.io/specification), Anthropic's, OpenAI's and Cursor's docs, and the OWASP Agentic Skills Top 10. Read each rule and its source at [skillland.io/validate/rules](https://skillland.io/validate/rules).
