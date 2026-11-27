@@ -1,0 +1,54 @@
+name: Skillland skill check
+description: Lint agent skills (SKILL.md) for Claude Code, Codex and Cursor in CI. Every rule quotes its official source.
+author: Skillland
+branding:
+  icon: check-square
+  color: green
+
+inputs:
+  path:
+    description: A skill folder, a SKILL.md file, or a folder that holds many skills.
+    required: false
+    default: .
+  min-score:
+    description: Fail when any skill scores below this number (0-100). Empty means fail only on errors.
+    required: false
+    default: ""
+  min-area-grade:
+    description: Fail when an area grades below a limit. "B" for every area, "security=A" for one area. Separate several with spaces.
+    required: false
+    default: ""
+  validator-version:
+    description: Version of @skillland/validator to run.
+    required: false
+    default: 0.8.0
+
+outputs:
+  score:
+    description: Score of the lowest-scoring skill (0-100).
+    value: ${{ steps.check.outputs.score }}
+  grade:
+    description: Grade of the lowest-scoring skill (A-F).
+    value: ${{ steps.check.outputs.grade }}
+  skills:
+    description: Number of skills checked.
+    value: ${{ steps.check.outputs.skills }}
+  failed:
+    description: Number of skills that failed.
+    value: ${{ steps.check.outputs.failed }}
+
+runs:
+  using: composite
+  steps:
+    - id: check
+      shell: bash
+      env:
+        SKILLLAND_PATH: ${{ inputs.path }}
+        SKILLLAND_MIN_SCORE: ${{ inputs.min-score }}
+        SKILLLAND_MIN_AREA_GRADE: ${{ inputs.min-area-grade }}
+        SKILLLAND_VERSION: ${{ inputs.validator-version }}
+      run: |
+        args=(check "$SKILLLAND_PATH" --format github)
+        if [ -n "$SKILLLAND_MIN_SCORE" ]; then args+=(--min-score "$SKILLLAND_MIN_SCORE"); fi
+        for limit in $SKILLLAND_MIN_AREA_GRADE; do args+=(--min-area-grade "$limit"); done
+        npx --yes -p "@skillland/validator@$SKILLLAND_VERSION" skillland "${args[@]}"
